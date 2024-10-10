@@ -1,0 +1,152 @@
+/* Base styles */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Light Mode */
+.light-mode {
+    background-color: #f0f0f0;
+    color: black;
+}
+
+.light-mode .sidebar {
+    background-color: #f1eded; /* Sidebar background in light mode */
+}
+
+.light-mode .main-content {
+    background: #ffffff; /* Main content background in light mode */
+}
+
+/* Dark Mode */
+.dark-mode {
+    background-color: #121212; /* Overall background for dark mode */
+    color: white; /* Text color for dark mode */
+}
+
+.dark-mode .sidebar {
+    background-color: #1e1e1e; /* Sidebar background in dark mode */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5); /* Sidebar shadow in dark mode */
+}
+
+.dark-mode .main-content {
+    background: #1e1e1e; /* Main content background in dark mode */
+    border-left: 2px solid rgba(255, 255, 255, 0.2); /* Left border to separate */
+}
+
+/* Dashboard Layout */
+.dashboard-container {
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 220px; /* Sidebar width */
+    padding: 20px; /* Padding for sidebar */
+    display: flex;
+    flex-direction: column; /* Vertical layout */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Light shadow for sidebar */
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px; /* Space below user info */
+}
+
+.user-image {
+    width: 60px; /* Image size */
+    height: 60px; /* Image size */
+    border-radius: 50%; /* Round image */
+    margin-bottom: 10px; /* Space below image */
+}
+
+.sidebar h3 {
+    margin: 0; /* No margin for h3 */
+    color: #333; /* Title color */
+}
+
+.sidebar p {
+    margin: 0; /* No margin for p */
+    color: #777; /* Subtitle color */
+}
+
+/* Sidebar Links */
+.sidebar ul {
+    list-style-type: none; /* Remove list styles */
+    padding: 0; /* No padding */
+    margin: 0; /* No margin */
+    flex-grow: 1; /* Allow the list to grow */
+}
+
+.sidebar li {
+    cursor: pointer; /* Pointer on hover */
+    padding: 15px; /* Padding for list items */
+    border-radius: 5px; /* Rounded corners */
+    transition: all 0.3s ease; /* Smooth transition */
+    display: flex; /* Flex display */
+    align-items: center; /* Center items vertically */
+    gap: 10px; /* Space between icon and text */
+}
+
+.sidebar li:hover, .sidebar li.active {
+    background-color: rgb(67, 155, 243); /* Highlight on hover */
+    color: white; /* Text color on hover */
+}
+
+/* Main Content */
+.main-content {
+    flex: 1; /* Allow main content to take up remaining space */
+    padding: 40px; /* Padding for content */
+    overflow-y: auto; /* Enable vertical scrolling */
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1); /* Shadow on the right */
+}
+
+/* Toggle Switch Styles */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px; /* Width of toggle switch */
+    height: 34px; /* Height of toggle switch */
+    margin-top: auto; /* Align to bottom */
+}
+
+.switch input {
+    opacity: 0; /* Hide checkbox */
+    width: 0; /* Width of checkbox */
+    height: 0; /* Height of checkbox */
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer; /* Pointer on hover */
+    top: 0; /* Align to top */
+    left: 0; /* Align to left */
+    right: 0; /* Align to right */
+    bottom: 0; /* Align to bottom */
+    background-color: #ccc; /* Slider background color */
+    transition: .4s; /* Smooth transition */
+    border-radius: 34px; /* Rounded corners */
+}
+
+.slider:before {
+    position: absolute; /* Position circle */
+    content: "";
+    height: 26px; /* Height of circle */
+    width: 26px; /* Width of circle */
+    left: 4px; /* Position from left */
+    bottom: 4px; /* Position from bottom */
+    background-color: white; /* Circle color */
+    transition: .4s; /* Smooth transition */
+    border-radius: 50%; /* Round the circle */
+}
+
+/* Checked styles */
+input:checked + .slider {
+    background-color: rgb(67, 155, 243); /* Color when checked */
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px); /* Move circle on check */
+}
