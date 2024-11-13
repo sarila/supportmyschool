@@ -1,4 +1,31 @@
 * {
     padding: 0;
     margin: 0;
+    font-family: "Nunito", sans-serif;
+    font-size: 18px;
+}
+.additional-links {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 14px;
+    color: #34495e;
+    font-weight: bold;
+    display: block; 
+}
+
+.additional-links-text {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 16px;
+    color: #34495e;
+}
+
+.additional-links-text a {
+    color: #34495e;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.additional-links-text a:hover {
+    text-decoration: underline;
 }

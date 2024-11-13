@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import '../css-files/dashboard.css';
 import logo from "../assets/HeaderResize1.png";
-import { FaUser, FaWallet, FaFileAlt, FaSchool, FaSignOutAlt, FaCog } from 'react-icons/fa'; // Updated icons
+import Profile from "./Profile";
+import { FaUser, FaWallet, FaFileAlt, FaSchool, FaSignOutAlt, FaCog } from 'react-icons/fa';
+import { Navbar } from './Navbar';
 
 export const Dashboard = () => {
   const [selectedSection, setSelectedSection] = useState('profile');
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Effect to toggle body class based on theme
   useEffect(() => {
@@ -15,19 +18,19 @@ export const Dashboard = () => {
   const renderContent = () => {
     switch (selectedSection) {
       case 'profile':
-        return <div>Profile Content</div>;
+        return <Profile />;
       case 'budget':
-        return <div>Budget Content</div>;
+        return <div className='content-box'>Budget Content</div>;
       case 'proposal':
-        return <div>Proposal Content</div>;
+        return <div className='content-box'>Proposal Content</div>;
       case 'schools':
-        return <div>Available Schools Content</div>;
+        return <div className='content-box'>Available Schools Content</div>;
       case 'settings':
-        return <div>Settings Content</div>; // New content section for settings
+        return <div className='content-box'>Settings Content</div>;
       case 'logout':
-        return <div>Logout Content</div>;
+        return <div className='content-box'>Logout Content</div>;
       default:
-        return <div>Welcome to the Dashboard</div>;
+        return <div className='content-box'>Welcome to the Dashboard</div>;
     }
   };
 
@@ -35,30 +38,35 @@ export const Dashboard = () => {
     setIsDarkMode(prev => !prev);
   };
 
+  const toggleSidebar = () => {
+    setIsSidebarCollapsed(prevState => !prevState);
+  };
+
   return (
     <div className='dashboard-container'>
-      <div className='sidebar'>
+      <div className={`sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
         <div className='user-info'>
           <img src={logo} alt="User" className='user-image' />
         </div>
         <ul>
-          <li className={selectedSection === 'profile' ? 'active' : ''} onClick={() => setSelectedSection('profile')}><FaUser /> Profile</li>
-          <li className={selectedSection === 'budget' ? 'active' : ''} onClick={() => setSelectedSection('budget')}><FaWallet /> Budget</li>
-          <li className={selectedSection === 'proposal' ? 'active' : ''} onClick={() => setSelectedSection('proposal')}><FaFileAlt /> Proposal</li>
-          <li className={selectedSection === 'schools' ? 'active' : ''} onClick={() => setSelectedSection('schools')}><FaSchool /> Available Schools</li>
-          <li className={selectedSection === 'settings' ? 'active' : ''} onClick={() => setSelectedSection('settings')}><FaCog /> Settings</li> {/* New Settings option */}
-          <li className={selectedSection === 'logout' ? 'active' : ''} onClick={() => setSelectedSection('logout')}><FaSignOutAlt /> Logout</li>
+          <li className={selectedSection === 'profile' ? 'active' : ''} onClick={() => setSelectedSection('profile')}><FaUser /> {isSidebarCollapsed ? '' : 'Profile'}</li>
+          <li className={selectedSection === 'budget' ? 'active' : ''} onClick={() => setSelectedSection('budget')}><FaWallet /> {isSidebarCollapsed ? '' : 'Budget'}</li>
+          <li className={selectedSection === 'proposal' ? 'active' : ''} onClick={() => setSelectedSection('proposal')}><FaFileAlt /> {isSidebarCollapsed ? '' : 'Proposal'}</li>
+          <li className={selectedSection === 'schools' ? 'active' : ''} onClick={() => setSelectedSection('schools')}><FaSchool /> {isSidebarCollapsed ? '' : 'Schools'}</li>
+          <li className={selectedSection === 'settings' ? 'active' : ''} onClick={() => setSelectedSection('settings')}><FaCog /> {isSidebarCollapsed ? '' : 'Settings'}</li>
+          <li className={selectedSection === 'logout' ? 'active' : ''} onClick={() => setSelectedSection('logout')}><FaSignOutAlt /> {isSidebarCollapsed ? '' : 'Logout'}</li>
         </ul>
-        {/* Theme Toggle Switch */}
         <div className="theme-toggle">
           <label className="switch">
             <input type="checkbox" checked={isDarkMode} onChange={handleToggle} />
             <span className="slider"></span>
           </label>
-          <span style={{ marginLeft: '10px' }}>Switch Theme</span> {/* Text for theme toggle */}
+          <span style={{ marginLeft: '10px' }}>Dark Theme</span>
         </div>
       </div>
-      <div className='main-content'>
+
+      <div className="main-content">
+        <Navbar onToggleSidebar={toggleSidebar} />
         {renderContent()}
       </div>
     </div>
