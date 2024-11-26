@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import '../css-files/dashboard.css';
+import '../styles/dashboard.css';
 import logo from "../assets/HeaderResize1.png";
-import Profile from "./Profile";
+import { Profile } from './Profile';
 import { FaUser, FaWallet, FaFileAlt, FaSchool, FaSignOutAlt, FaCog } from 'react-icons/fa';
-import { Navbar } from './Navbar';
+import { Navbar } from '../components/Navbar';
 
 export const Dashboard = () => {
   const [selectedSection, setSelectedSection] = useState('profile');
