@@ -90,7 +90,7 @@ label {
 
 .form-row input:focus,
 .form-row select:focus {
-    border-color: #0056b3;
+    border-color: #090909;
     outline: none;
     box-shadow: 0 0 4px rgba(0, 86, 179, 0.3);
 }

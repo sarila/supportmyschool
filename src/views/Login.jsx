@@ -33,10 +33,10 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const newErrors = validateForm(formData);
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-    } else {
+    // const newErrors = validateForm(formData);
+    // if (Object.keys(newErrors).length > 0) {
+    //   setErrors(newErrors);
+    // } else {
       console.log("Form submitted:", formData);
       setFormData({
         phonenumber: "",
@@ -44,7 +44,7 @@ const Login = () => {
         password: "",
       });
       navigate(routes.dashboard.path);
-    }
+    // }
   };
 
   return (
@@ -128,7 +128,7 @@ const Login = () => {
               <Link href="/forgot-password" variant="body2">
                 Forgot password?
               </Link>
-              <Link href="/sign-up" variant="body2">
+              <Link href="/signup" variant="body2">
                 Sign up here
               </Link>
             </Grid>
