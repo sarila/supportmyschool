@@ -4,11 +4,11 @@ import {
   Button,
   Typography,
   Box,
-  Link,
   Container,
   Grid,
   Paper,
 } from "@mui/material";
+import { Link } from "react-router-dom"; // Use Link from react-router-dom
 import logo from "../assets/FullResize1.png";
 import landingimage from "../assets/schoolkids.jpg";
 import { validateField, validateForm } from "../utils/formValidation";
@@ -33,18 +33,13 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // const newErrors = validateForm(formData);
-    // if (Object.keys(newErrors).length > 0) {
-    //   setErrors(newErrors);
-    // } else {
-      console.log("Form submitted:", formData);
-      setFormData({
-        phonenumber: "",
-        email: "",
-        password: "",
-      });
-      navigate(routes.dashboard.path);
-    // }
+    console.log("Form submitted:", formData);
+    setFormData({
+      phonenumber: "",
+      email: "",
+      password: "",
+    });
+    navigate(routes.dashboard.path);
   };
 
   return (
@@ -125,12 +120,12 @@ const Login = () => {
               Login
             </Button>
             <Grid container justifyContent="space-between" sx={{ mt: 2 }}>
-              <Link href="/forgot-password" variant="body2">
-                Forgot password?
-              </Link>
-              <Link href="/signup" variant="body2">
-                Sign up here
-              </Link>
+              <Typography variant="body2">
+                <Link to={routes.forgotPassword.path}>Forgot password?</Link>
+              </Typography>
+              <Typography variant="body2">
+                <Link to={routes.signup.path}>Sign up here</Link>
+              </Typography>
             </Grid>
           </form>
         </Paper>
