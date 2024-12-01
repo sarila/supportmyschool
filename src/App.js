@@ -5,6 +5,7 @@ import './App.css';
 import LoginPage from './views/Login.jsx';
 import Signup from './views/Signup.jsx';
 import Reports from './views/Reports.jsx';
+import ForgotPassword from './views/ForgotPassword.jsx';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           {/* <Route path="/dashboard" element={<Dashboard />} /> */}
           <Route path="/reports" element={<Reports />} />
+          <Route path="/forgotpassword" element={<ForgotPassword />} />
         </Routes>
       </div>
     </Router>
