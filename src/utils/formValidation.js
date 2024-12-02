@@ -15,6 +15,12 @@ export const validateField = (field, value) => {
       return "";
     case "confirmPassword":
       return value ? "" : "Please confirm your password";
+    case "phone":
+      if (!value) return "Phone number is required";
+      const isNumeric = value.split("").every((char) => char >= "0" && char <= "9");
+      if (!isNumeric) return "Phone number must contain only numbers";
+      if (value.length < 10 || value.length > 15) return "Phone number must of 10 digits";
+      return "";
     default:
       return "";
   }
@@ -53,6 +59,18 @@ export const validateForm = (formData) => {
     errors.confirmPassword = "Please confirm your password";
   } else if (formData.confirmPassword !== formData.password) {
     errors.confirmPassword = "Passwords do not match";
+  }
+
+  // Validate phone number
+  if (!formData.phone) {
+    errors.phone = "Phone number is required";
+  } else {
+    const isNumeric = formData.phone.split("").every((char) => char >= "0" && char <= "9");
+    if (!isNumeric) {
+      errors.phone = "Phone number must contain only numbers";
+    } else if (formData.phone.length < 10) {
+      errors.phone = "Phone number must of 10 digits";
+    }
   }
 
   return errors;

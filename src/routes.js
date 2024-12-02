@@ -7,8 +7,8 @@ const Budget = React.lazy(() => import("./views/Budget"));
 const Settings = React.lazy(() => import("./views/Settings"));
 const Profile = React.lazy(() => import("./views/Profile"));
 const Dashboard = React.lazy(() => import("./views/Dashboard"));
+const ForgotPassword = React.lazy(() => import("./views/ForgotPassword.jsx"));
 
-// Routes and their properties
 const routes = {
   login: {
     name: "Login",
@@ -50,6 +50,12 @@ const routes = {
     name: "Dashboard",
     component: Dashboard,
     path: "/dashboard",
+    exact: true,
+  },
+  forgotPassword: {
+    name: "Forgot Password",
+    component: ForgotPassword,
+    path: "/forgotpassword",
     exact: true,
   },
 };
