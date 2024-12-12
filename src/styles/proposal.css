@@ -1,10 +1,15 @@
 body {
   background-color: #f4f6f9;
   font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
 .proposal-container {
   padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .header {
@@ -17,10 +22,25 @@ body {
 .heading {
   font-size: 2.5rem;
   font-weight: bold;
+  color: #333;
 }
 
 .add-btn {
   background-color: #1976d2;
+  color: white;
+  border-radius: 4px;
+  padding: 10px 15px;
+  text-transform: uppercase;
+  font-weight: 600;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.add-btn:hover {
+  background-color: #1565c0;
+  transform: translateY(-2px);
 }
 
 .proposal-list {
@@ -35,18 +55,20 @@ body {
   cursor: pointer;
   background-color: #ffffff;
   border-left: 6px solid #e0e0e0;
+  border-radius: 8px;
   transition: box-shadow 0.3s ease, transform 0.3s ease;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+}
 
-  &.new {
-    background-color: #fff8e1;
-    border-left-color: #ff9800;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-  }
+.proposal-card.new {
+  background-color: #fff8e1;
+  border-left-color: #ff9800;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
 
-  &:hover {
-    transform: scale(1.03);
-    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.2);
-  }
+.proposal-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.2);
 }
 
 .card-left {
@@ -56,12 +78,21 @@ body {
 
 .avatar {
   background-color: #3f51b5;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
   margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
 }
 
 .card-info {
   .card-sender {
     font-weight: bold;
+    color: #333;
   }
 
   .card-subject {
@@ -77,17 +108,33 @@ body {
 
 .attachment-chip {
   border-color: #3f51b5;
+  color: #3f51b5;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.attachment-chip:hover {
+  background-color: #3f51b5;
+  color: white;
 }
 
 .card-date {
   display: flex;
   align-items: center;
   color: #757575;
+  font-size: 0.875rem;
 }
 
 .proposal-modal {
   .modal-header {
     font-weight: bold;
+    background-color: #1976d2;
+    color: white;
+    padding: 16px;
+    border-radius: 8px 8px 0 0;
   }
 
   .modal-info {
@@ -101,18 +148,36 @@ body {
 
   .modal-content {
     margin-bottom: 15px;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #333;
   }
 
   .modal-attachments {
+    margin-top: 20px;
+
     .modal-attachment-item {
       display: flex;
       align-items: center;
       gap: 5px;
       color: #757575;
+      margin-top: 10px;
     }
   }
 
   .close-btn {
     background-color: #1976d2;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .close-btn:hover {
+    background-color: #1565c0;
+    transform: translateY(-2px);
   }
 }

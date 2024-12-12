@@ -1,24 +1,10 @@
-import React, { useState } from 'react';
-import { Card, Typography, Avatar, Chip } from '@mui/material';
-import { AccessTime, AttachFile } from '@mui/icons-material';
-import '../styles/proposal.css';
+import React from 'react';
+import { Card, Typography, Avatar, Chip, IconButton } from '@mui/material';
+import { AccessTime, AttachFile, Star, Delete } from '@mui/icons-material';
 
-function ProposalCard({ message, onClick }) {
-  const [viewed, setViewed] = useState(false);
-
-  const handleCardClick = () => {
-    setViewed(true);
-    onClick();
-  };
-
+function ProposalCard({ message, onClick, onStar, onDelete }) {
   return (
-    <Card
-      onClick={handleCardClick}
-      className={`proposal-card ${message.isNew && !viewed ? 'new' : ''}`}
-      style={{
-        backgroundColor: viewed || !message.isNew ? '#f9f9f9' : '', 
-      }}
-    >
+    <Card onClick={onClick} className={`proposal-card ${message.isNew ? 'new' : ''}`}>
       <div className="card-left">
         <Avatar className="avatar">{message.sender[0]}</Avatar>
         <div className="card-info">
@@ -43,6 +29,12 @@ function ProposalCard({ message, onClick }) {
         <Typography variant="body2" className="card-date">
           <AccessTime fontSize="small" /> {message.date}
         </Typography>
+        <IconButton onClick={onStar} aria-label="star">
+          <Star color={message.status === 'starred' ? 'primary' : 'disabled'} />
+        </IconButton>
+        <IconButton onClick={onDelete} aria-label="delete">
+          <Delete color="error" />
+        </IconButton>
       </div>
     </Card>
   );
