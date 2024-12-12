@@ -2,7 +2,7 @@ import React from "react";
 
 const Login = React.lazy(() => import("./views/Login"));
 const Signup = React.lazy(() => import("./views/Signup"));
-const Reports = React.lazy(() => import("./views/Reports"));
+const Proposals = React.lazy(() => import("./views/Proposals"));
 const Budget = React.lazy(() => import("./views/Budget"));
 const Settings = React.lazy(() => import("./views/Settings"));
 const Profile = React.lazy(() => import("./views/Profile"));
@@ -22,10 +22,10 @@ const routes = {
     path: "/signup",
     exact: true,
   },
-  reports: {
-    name: "Reports",
-    component: Reports,
-    path: "/reports",
+  proposals: {
+    name: "Proposals",
+    component: Proposals,
+    path: "/proposals",
     exact: true,
   },
   budget: {
