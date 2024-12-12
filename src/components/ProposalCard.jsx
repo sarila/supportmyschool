@@ -1,27 +1,49 @@
-import React from 'react';
-import { Card, CardContent, CardActions, Typography, Button, Box } from '@mui/material';
+import React, { useState } from 'react';
+import { Card, Typography, Avatar, Chip } from '@mui/material';
+import { AccessTime, AttachFile } from '@mui/icons-material';
+import '../styles/proposal.css';
 
-function ProposalCard({ proposal, onViewProposal }) {
+function ProposalCard({ message, onClick }) {
+  const [viewed, setViewed] = useState(false);
+
+  const handleCardClick = () => {
+    setViewed(true);
+    onClick();
+  };
+
   return (
-    <Card sx={{ maxWidth: 345, borderRadius: 2, boxShadow: 3, transition: 'transform 0.2s ease' }}>
-      <CardContent>
-        <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
-          {proposal.title}
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ marginTop: 1 }}>
-          Date: {proposal.date}
-        </Typography>
-        <Box mt={2}>
-          <Typography variant="body2" color="text.primary">
-            {proposal.summary}
+    <Card
+      onClick={handleCardClick}
+      className={`proposal-card ${message.isNew && !viewed ? 'new' : ''}`}
+      style={{
+        backgroundColor: viewed || !message.isNew ? '#f9f9f9' : '', 
+      }}
+    >
+      <div className="card-left">
+        <Avatar className="avatar">{message.sender[0]}</Avatar>
+        <div className="card-info">
+          <Typography variant="subtitle1" className="card-sender">
+            {message.sender}
           </Typography>
-        </Box>
-      </CardContent>
-      <CardActions>
-        <Button size="small" color="primary" onClick={() => onViewProposal(proposal)}>
-          View Proposal
-        </Button>
-      </CardActions>
+          <Typography variant="body2" className="card-subject">
+            {message.subject}
+          </Typography>
+        </div>
+      </div>
+      <div className="card-right">
+        {message.attachments.length > 0 && (
+          <Chip
+            icon={<AttachFile />}
+            label="Attachments"
+            variant="outlined"
+            size="small"
+            className="attachment-chip"
+          />
+        )}
+        <Typography variant="body2" className="card-date">
+          <AccessTime fontSize="small" /> {message.date}
+        </Typography>
+      </div>
     </Card>
   );
 }

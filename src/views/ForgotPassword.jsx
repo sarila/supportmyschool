@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { validateField } from "../utils/formValidation";
 import {
   Box,
@@ -12,11 +13,14 @@ import {
   FormControl,
   FormLabel,
 } from "@mui/material";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 const ForgotPassword = () => {
   const [verificationMethod, setVerificationMethod] = useState("email");
   const [inputValue, setInputValue] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const value = e.target.value;
@@ -40,10 +44,15 @@ const ForgotPassword = () => {
     setError("");
   };
 
+  const handleBack = () => {
+    navigate(-1);
+  };
+
   return (
     <Container maxWidth="sm">
       <Box
         sx={{
+          position: "relative",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -54,6 +63,20 @@ const ForgotPassword = () => {
           boxShadow: 3,
         }}
       >
+        <Button
+          startIcon={<FontAwesomeIcon icon={faArrowLeft} />}
+          sx={{
+            position: "absolute",
+            top: 10,
+            left: 10,
+            fontSize: "1rem",
+            textTransform: "none",
+          }}
+          onClick={handleBack}
+        >
+          Back
+        </Button>
+
         <Typography variant="h4" gutterBottom>
           Forgot Password
         </Typography>
