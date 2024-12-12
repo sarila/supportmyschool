@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Container, Box, Typography, Fab } from '@mui/material';
+import { Container, Box, Typography, Fab, Tabs, Tab } from '@mui/material';
+import { IconButton } from '@mui/material';
+import { Star, Restore, DeleteForever } from '@mui/icons-material'; 
 import { Add } from '@mui/icons-material';
 import MessageCard from '../components/ProposalCard';
 import ProposalModal from '../components/ProposalModal';
-import '../styles/proposal.css'; 
+import '../styles/proposal.css';
 
-const proposals = [
+const initialProposals = [
   {
     id: 1,
     sender: 'Kanya School',
@@ -130,6 +132,8 @@ const proposals = [
 
 function Proposal() {
   const [selectedProposal, setSelectedProposal] = useState(null);
+  const [proposals, setProposals] = useState(initialProposals);
+  const [tabValue, setTabValue] = useState('inbox');
 
   const handleOpenProposal = (proposal) => {
     setSelectedProposal(proposal);
@@ -138,6 +142,44 @@ function Proposal() {
   const handleCloseModal = () => {
     setSelectedProposal(null);
   };
+
+  const handleStar = (id) => {
+    setProposals(proposals.map(proposal => {
+      if (proposal.id === id && proposal.status !== 'trash') {
+        const newStatus = proposal.status === 'starred' ? 'inbox' : 'starred';
+        return { ...proposal, status: newStatus };
+      }
+      return proposal;
+    }));
+  };
+
+  const handleDelete = (id) => {
+    setProposals(proposals.map(proposal => {
+      if (proposal.id === id) {
+        if (proposal.status === 'inbox') {
+          return { ...proposal, status: 'trash' }; // Move to trash
+        } else if (proposal.status === 'trash') {
+          return null; // Remove completely from proposals
+        }
+      }
+      return proposal;
+    }).filter(Boolean)); // Filter out any null entries
+  };
+
+  const handleRestore = (id) => {
+    setProposals(proposals.map(proposal => {
+      if (proposal.id === id) {
+        return { ...proposal, status: 'inbox' }; // Restore to inbox
+      }
+      return proposal;
+    }));
+  };
+
+  const handleTabChange = (event, newTabValue) => {
+    setTabValue(newTabValue);
+  };
+
+  const filteredProposals = proposals.filter(proposal => proposal.status === tabValue || tabValue === 'inbox');
 
   return (
     <Container className="proposal-container">
@@ -149,12 +191,35 @@ function Proposal() {
           <Add />
         </Fab>
       </div>
+      <Tabs value={tabValue} onChange={handleTabChange} aria-label="email categories">
+        <Tab label="Inbox" value="inbox" />
+        <Tab label="Starred" value="starred" />
+        <Tab label="Trash" value="trash" />
+      </Tabs>
       <div className="proposal-list">
-        {proposals.map((proposal) => (
+        {filteredProposals.map((proposal) => (
           <MessageCard
             key={proposal.id}
             message={proposal}
-            onClick={() => handleOpenProposal(proposal)}
+            onClick={() => handleOpenProposal(proposal)} // Open modal
+            onStar={() => handleStar(proposal.id)} // Toggle star
+            onDelete={() => handleDelete(proposal.id)} // Handle delete (move to trash)
+            actionButton={
+              proposal.status === 'trash' ? (
+                <>
+                  <IconButton onClick={() => handleRestore(proposal.id)} aria-label="restore">
+                    <Restore />
+                  </IconButton>
+                  <IconButton onClick={() => handleDelete(proposal.id)} aria-label="delete forever">
+                    <DeleteForever />
+                  </IconButton>
+                </>
+              ) : (
+                <IconButton onClick={() => handleDelete(proposal.id)} aria-label="delete">
+                  <Star />
+                </IconButton>
+              )
+            }
           />
         ))}
       </div>
