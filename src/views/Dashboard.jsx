@@ -25,6 +25,7 @@ import {
 } from "react-icons/fa";
 import logo from "../assets/HeaderResize1.png";
 import Proposals from "./Proposals";
+import SchoolTable from "./SchoolTable"; // Import SchoolTable component
 
 const drawerWidth = 240;
 const drawerMinWidth = 60;
@@ -61,9 +62,9 @@ export const Dashboard = () => {
       case "budget":
         return <div>Budget Content</div>;
       case "proposal":
-        return <Proposals />
+        return <Proposals />;
       case "schools":
-        return <div>Schools Content</div>;
+        return <SchoolTable />; // Render SchoolTable when "Schools" is selected
       case "settings":
         return <div>Settings Content</div>;
       case "logout":

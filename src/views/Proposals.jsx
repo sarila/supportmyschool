@@ -157,19 +157,19 @@ function Proposal() {
     setProposals(proposals.map(proposal => {
       if (proposal.id === id) {
         if (proposal.status === 'inbox') {
-          return { ...proposal, status: 'trash' }; // Move to trash
+          return { ...proposal, status: 'trash' };
         } else if (proposal.status === 'trash') {
-          return null; // Remove completely from proposals
+          return null;
         }
       }
       return proposal;
-    }).filter(Boolean)); // Filter out any null entries
+    }).filter(Boolean)); 
   };
 
   const handleRestore = (id) => {
     setProposals(proposals.map(proposal => {
       if (proposal.id === id) {
-        return { ...proposal, status: 'inbox' }; // Restore to inbox
+        return { ...proposal, status: 'inbox' };
       }
       return proposal;
     }));
