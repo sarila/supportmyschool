@@ -1,74 +1,176 @@
-import React, { useState, useEffect } from 'react';
-import '../styles/dashboard.css';
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  CssBaseline,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Switch,
+  Typography,
+  Tooltip,
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import {
+  FaBars,
+  FaUser,
+  FaWallet,
+  FaFileAlt,
+  FaSchool,
+  FaCog,
+  FaSignOutAlt,
+} from "react-icons/fa";
 import logo from "../assets/HeaderResize1.png";
-import { Profile } from './Profile';
-import { FaUser, FaWallet, FaFileAlt, FaSchool, FaSignOutAlt, FaCog } from 'react-icons/fa';
-import { Navbar } from '../components/Navbar';
+import Proposals from "./Proposals";
+import SchoolTable from "./SchoolTable"; 
+import Budget from './Budget';
+
+const drawerWidth = 240;
+const drawerMinWidth = 60;
+
+const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
+  ({ theme, open }) => ({
+    flexGrow: 1,
+    padding: theme.spacing(3),
+    marginLeft: open ? drawerWidth : drawerMinWidth,
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  })
+);
 
 export const Dashboard = () => {
-  const [selectedSection, setSelectedSection] = useState('profile');
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [selectedSection, setSelectedSection] = useState("profile");
+  const [isWideNavbar, setIsWideNavbar] = useState(true);
 
-  // Effect to toggle body class based on theme
   useEffect(() => {
-    document.body.className = isDarkMode ? 'dark-mode' : 'light-mode';
+    document.body.className = isDarkMode ? "dark-mode" : "light-mode";
   }, [isDarkMode]);
+
+  const toggleNavbar = () => {
+    setIsWideNavbar((prev) => !prev);
+  };
 
   const renderContent = () => {
     switch (selectedSection) {
-      case 'profile':
-        return <Profile />;
-      case 'budget':
-        return <div className='content-box'>Budget Content</div>;
-      case 'proposal':
-        return <div className='content-box'>Proposal Content</div>;
-      case 'schools':
-        return <div className='content-box'>Available Schools Content</div>;
-      case 'settings':
-        return <div className='content-box'>Settings Content</div>;
-      case 'logout':
-        return <div className='content-box'>Logout Content</div>;
+      case "profile":
+        return <div>Profile Content</div>;
+      case "budget":
+        return <Budget />;
+      case "proposal":
+        return <Proposals />;
+      case "schools":
+        return <SchoolTable />;
+      case "settings":
+        return <div>Settings Content</div>;
+      case "logout":
+        return <div>Logout Content</div>;
       default:
-        return <div className='content-box'>Welcome to the Dashboard</div>;
+        return <div>Welcome to the Dashboard</div>;
     }
   };
 
-  const handleToggle = () => {
-    setIsDarkMode(prev => !prev);
-  };
-
-  const toggleSidebar = () => {
-    setIsSidebarCollapsed(prevState => !prevState);
-  };
+  const menuItems = [
+    { label: "Profile", icon: <FaUser />, section: "profile" },
+    { label: "Budget", icon: <FaWallet />, section: "budget" },
+    { label: "Proposal", icon: <FaFileAlt />, section: "proposal" },
+    { label: "Schools", icon: <FaSchool />, section: "schools" },
+    { label: "Settings", icon: <FaCog />, section: "settings" },
+    { label: "Logout", icon: <FaSignOutAlt />, section: "logout" },
+  ];
 
   return (
-    <div className='dashboard-container'>
-      <div className={`sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
-        <div className='user-info'>
-          <img src={logo} alt="User" className='user-image' />
-        </div>
-        <ul>
-          <li className={selectedSection === 'profile' ? 'active' : ''} onClick={() => setSelectedSection('profile')}><FaUser /> {isSidebarCollapsed ? '' : 'Profile'}</li>
-          <li className={selectedSection === 'budget' ? 'active' : ''} onClick={() => setSelectedSection('budget')}><FaWallet /> {isSidebarCollapsed ? '' : 'Budget'}</li>
-          <li className={selectedSection === 'proposal' ? 'active' : ''} onClick={() => setSelectedSection('proposal')}><FaFileAlt /> {isSidebarCollapsed ? '' : 'Proposal'}</li>
-          <li className={selectedSection === 'schools' ? 'active' : ''} onClick={() => setSelectedSection('schools')}><FaSchool /> {isSidebarCollapsed ? '' : 'Schools'}</li>
-          <li className={selectedSection === 'settings' ? 'active' : ''} onClick={() => setSelectedSection('settings')}><FaCog /> {isSidebarCollapsed ? '' : 'Settings'}</li>
-          <li className={selectedSection === 'logout' ? 'active' : ''} onClick={() => setSelectedSection('logout')}><FaSignOutAlt /> {isSidebarCollapsed ? '' : 'Logout'}</li>
-        </ul>
-        <div className="theme-toggle">
-          <label className="switch">
-            <input type="checkbox" checked={isDarkMode} onChange={handleToggle} />
-            <span className="slider"></span>
-          </label>
-          <span style={{ marginLeft: '10px' }}>Dark Theme</span>
-        </div>
-      </div>
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
+      <Drawer
+        variant="permanent"
+        sx={{
+          width: isWideNavbar ? drawerWidth : drawerMinWidth,
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            width: isWideNavbar ? drawerWidth : drawerMinWidth,
+            overflowX: "hidden",
+            boxSizing: "border-box",
+          },
+        }}
+      >
+        {/* Hamburger Icon Above the Logo */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 1,
+          }}
+        >
+          <IconButton onClick={toggleNavbar}>
+            <FaBars />
+          </IconButton>
+        </Box>
 
-      <div className="main-content">
-        <Navbar onToggleSidebar={toggleSidebar} />
+        {/* Logo */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 2,
+          }}
+        >
+          <Box
+            component="img"
+            src={logo}
+            alt="Logo"
+            sx={{
+              width: isWideNavbar ? "100%" : "40px",
+              transition: "width 0.3s",
+            }}
+          />
+        </Box>
+
+        {/* Menu Items */}
+        <List>
+          {menuItems.map((item) => (
+            <Tooltip
+              title={isWideNavbar ? "" : item.label}
+              placement="right"
+              arrow
+              key={item.label}
+            >
+              <ListItem disablePadding>
+                <ListItemButton
+                  selected={selectedSection === item.section}
+                  onClick={() => setSelectedSection(item.section)}
+                >
+                  <ListItemIcon>{item.icon}</ListItemIcon>
+                  {isWideNavbar && <ListItemText primary={item.label} />}
+                </ListItemButton>
+              </ListItem>
+            </Tooltip>
+          ))}
+        </List>
+
+        {/* Dark Mode Toggle */}
+        <Box sx={{ p: 2, display: isWideNavbar ? "block" : "none" }}>
+          <Typography variant="body2">Dark Mode</Typography>
+          <Switch
+            checked={isDarkMode}
+            onChange={() => setIsDarkMode((prev) => !prev)}
+          />
+        </Box>
+      </Drawer>
+
+      {/* Main Content */}
+      <Main open={isWideNavbar}>
         {renderContent()}
-      </div>
-    </div>
+      </Main>
+    </Box>
   );
 };
+
+export default Dashboard;
