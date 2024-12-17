@@ -1,6 +1,6 @@
 body {
   background-color: #f4f6f9;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   margin: 0;
   padding: 0;
 }
@@ -180,4 +180,131 @@ body {
     background-color: #1565c0;
     transform: translateY(-2px);
   }
+}
+
+.proposal-container {
+  padding: 20px;
+  background-color: #f4f6f9;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.heading {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.add-btn {
+  background-color: #4caf50;
+  color: white;
+  &:hover {
+    background-color: #45a049;
+  }
+}
+
+.MuiTabs-root {
+  margin-bottom: 20px;
+}
+
+.proposal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 900px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ql-editor {
+  height: 200px;
+  min-height: 200px;
+  overflow-y: auto;
+  padding-right: 10px;  
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+
+.dropzone {
+  border: 2px dashed #ddd;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  margin-top: 10px; 
+}
+
+.file-list {
+  margin-top: 10px;
+}
+
+.MuiButton-contained {
+  background-color: #4caf50;
+  color: white;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.MuiButton-contained:hover {
+  background-color: #45a049;
+}
+
+.MuiTextField-root {
+  margin-bottom: 15px;
+}
+
+.MuiTypography-body2 {
+  font-size: 14px;
+  color: #555;
+}
+
+.upload-text {
+  margin-bottom: 10px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+
+.attachment-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.attachment-thumbnail {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+.attachment-name {
+  font-size: 14px;
+  color: #555;
+}
+
+.modal-attachments {
+  margin-top: 20px;
+}
+
+.modal-attachment-item {
+  margin-bottom: 10px;
+}
+
+.modal-divider {
+  margin: 20px 0;
 }

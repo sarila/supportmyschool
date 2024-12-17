@@ -1,185 +1,172 @@
-import React, { useState } from 'react';
-import { Container, Box, Typography, Fab, Tabs, Tab } from '@mui/material';
-import { IconButton } from '@mui/material';
-import { Star, Restore, DeleteForever } from '@mui/icons-material'; 
-import { Add } from '@mui/icons-material';
-import MessageCard from '../components/ProposalCard';
-import ProposalModal from '../components/ProposalModal';
-import '../styles/proposal.css';
+import React, { useState } from "react";
+import {
+  Container,
+  Box,
+  Typography,
+  Fab,
+  Tabs,
+  Tab,
+  TextField,
+  Button,
+  Modal,
+} from "@mui/material";
+import ReactQuill from "react-quill";
+import { Add } from "@mui/icons-material";
+import { useDropzone } from "react-dropzone";
+import "react-quill/dist/quill.snow.css";
+import "../styles/proposal.css";
+import MessageCard from "../components/ProposalCard";
+import ProposalModal from "../components/ProposalModal";
 
 const initialProposals = [
   {
     id: 1,
-    sender: 'Kanya School',
-    subject: 'Infrastructure Budget Allocation',
-    summary: 'Request for additional funding for infrastructure.',
-    date: 'Today',
-    content: 'Detailed proposal for infrastructure budget allocation.',
+    sender: "Kanya School",
+    subject: "Infrastructure Budget Allocation",
+    summary: "Request for additional funding for infrastructure.",
+    date: "Today",
+    content: "Detailed proposal for infrastructure budget allocation.",
     isNew: true,
     attachments: [],
   },
   {
     id: 2,
-    sender: 'Shree Laxmi Secondary School',
-    subject: 'Projector Budget',
-    summary: 'Proposal for purchasing new projectors.',
-    date: 'Yesterday',
-    content: 'Proposal for acquiring modern projectors for classrooms.',
+    sender: "Shree Laxmi Secondary School",
+    subject: "Projector Budget",
+    summary: "Proposal for purchasing new projectors.",
+    date: "Yesterday",
+    content: "Proposal for acquiring modern projectors for classrooms.",
     isNew: false,
-    attachments: ['AppScreenshots.pdf'],
-  },{
+    attachments: ["AppScreenshots.pdf"],
+  },
+  {
     id: 3,
-    sender: 'Green Valley School',
-    subject: 'Library Renovation Request',
-    summary: 'Proposal to renovate and expand the school library.',
-    date: '2 days ago',
-    content: 'Detailed breakdown of the renovation plans and costs for the library.',
+    sender: "Green Valley School",
+    subject: "Library Renovation Request",
+    summary: "Proposal to renovate and expand the school library.",
+    date: "2 days ago",
+    content:
+      "Detailed breakdown of the renovation plans and costs for the library.",
     isNew: true,
     attachments: [],
   },
   {
     id: 4,
-    sender: 'Sunrise Academy',
-    subject: 'Science Lab Equipment',
-    summary: 'Request for funding to upgrade science lab equipment.',
-    date: '3 days ago',
-    content: 'Proposal for purchasing modern lab equipment for experiments.',
+    sender: "Sunrise Academy",
+    subject: "Science Lab Equipment",
+    summary: "Request for funding to upgrade science lab equipment.",
+    date: "3 days ago",
+    content: "Proposal for purchasing modern lab equipment for experiments.",
     isNew: true,
-    attachments: ['LabEquipmentList.pdf'],
+    attachments: ["LabEquipmentList.pdf"],
   },
   {
     id: 5,
-    sender: 'Everest High School',
-    subject: 'Sports Ground Maintenance',
-    summary: 'Proposal for repairing and maintaining the sports ground.',
-    date: 'Last week',
-    content: 'Details about the maintenance plans for the sports ground.',
+    sender: "Everest High School",
+    subject: "Sports Ground Maintenance",
+    summary: "Proposal for repairing and maintaining the sports ground.",
+    date: "Last week",
+    content: "Details about the maintenance plans for the sports ground.",
     isNew: false,
     attachments: [],
   },
-  {
-    id: 6,
-    sender: 'Bright Future School',
-    subject: 'Digital Learning Initiative',
-    summary: 'Request for tablets to support digital learning.',
-    date: '5 days ago',
-    content: 'Proposal for integrating tablets into the curriculum.',
-    isNew: true,
-    attachments: ['DigitalLearningProposal.pdf'],
-  },
-  {
-    id: 7,
-    sender: 'Golden Horizon School',
-    subject: 'Teacher Training Program',
-    summary: 'Request for funds to train teachers on modern teaching methods.',
-    date: 'Yesterday',
-    content: 'Proposal detailing the benefits of training programs for teachers.',
-    isNew: false,
-    attachments: [],
-  },
-  {
-    id: 8,
-    sender: 'Silver Oak Secondary School',
-    subject: 'Classroom Furniture',
-    summary: 'Proposal for new classroom desks and chairs.',
-    date: 'Last week',
-    content: 'Details about the furniture required for the classrooms.',
-    isNew: false,
-    attachments: ['FurnitureDesigns.pdf'],
-  },
-  {
-    id: 9,
-    sender: 'Harmony Public School',
-    subject: 'Art Supplies Funding',
-    summary: 'Request for funding to purchase art supplies for students.',
-    date: '3 days ago',
-    content: 'Proposal for providing art materials for creative workshops.',
-    isNew: true,
-    attachments: [],
-  },
-  {
-    id: 10,
-    sender: 'Rising Star Academy',
-    subject: 'Computer Lab Upgrade',
-    summary: 'Request for new computers and software for the lab.',
-    date: '4 days ago',
-    content: 'Proposal for updating the computer lab infrastructure.',
-    isNew: false,
-    attachments: ['ComputerLabDetails.pdf'],
-  },
-  {
-    id: 11,
-    sender: 'Bright Minds School',
-    subject: 'Music Program Expansion',
-    summary: 'Proposal to expand the music program with new instruments.',
-    date: 'Yesterday',
-    content: 'Details about the plan to enhance music education.',
-    isNew: true,
-    attachments: [],
-  },
-  {
-    id: 12,
-    sender: 'Peace Valley School',
-    subject: 'Cultural Festival Funding',
-    summary: 'Request for financial support for an upcoming cultural event.',
-    date: '5 days ago',
-    content: 'Proposal detailing the budget and activities planned for the festival.',
-    isNew: false,
-    attachments: ['EventBudget.pdf'],
-  },
-  
 ];
 
 function Proposal() {
   const [selectedProposal, setSelectedProposal] = useState(null);
   const [proposals, setProposals] = useState(initialProposals);
-  const [tabValue, setTabValue] = useState('inbox');
+  const [tabValue, setTabValue] = useState("inbox");
+  const [openAddModal, setOpenAddModal] = useState(false);
+  const [newProposal, setNewProposal] = useState({
+    title: "",
+    description: "",
+    files: [],
+    status: "inbox",
+  });
 
-  const handleOpenProposal = (proposal) => {
-    setSelectedProposal(proposal);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedProposal(null);
-  };
-
-  const handleStar = (id) => {
-    setProposals(proposals.map(proposal => {
-      if (proposal.id === id && proposal.status !== 'trash') {
-        const newStatus = proposal.status === 'starred' ? 'inbox' : 'starred';
-        return { ...proposal, status: newStatus };
-      }
-      return proposal;
-    }));
-  };
-
-  const handleDelete = (id) => {
-    setProposals(proposals.map(proposal => {
-      if (proposal.id === id) {
-        if (proposal.status === 'inbox') {
-          return { ...proposal, status: 'trash' };
-        } else if (proposal.status === 'trash') {
-          return null;
-        }
-      }
-      return proposal;
-    }).filter(Boolean)); 
-  };
-
-  const handleRestore = (id) => {
-    setProposals(proposals.map(proposal => {
-      if (proposal.id === id) {
-        return { ...proposal, status: 'inbox' };
-      }
-      return proposal;
-    }));
-  };
+  const handleOpenAddModal = () => setOpenAddModal(true);
+  const handleCloseAddModal = () => setOpenAddModal(false);
 
   const handleTabChange = (event, newTabValue) => {
     setTabValue(newTabValue);
   };
 
-  const filteredProposals = proposals.filter(proposal => proposal.status === tabValue || tabValue === 'inbox');
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop: (acceptedFiles) => {
+      setNewProposal((prev) => ({
+        ...prev,
+        files: [...prev.files, ...acceptedFiles],
+      }));
+    },
+    multiple: true,
+  });
+
+  const handleSubmit = () => {
+    const updatedProposal = {
+      id: proposals.length + 1,
+      sender: "New Sender",
+      subject: newProposal.title,
+      summary: newProposal.description,
+      date: "Just Now",
+      content: newProposal.description,
+      isNew: true,
+      attachments: newProposal.files.map((file) => file.name),
+      status: newProposal.status,
+    };
+    setProposals([...proposals, updatedProposal]);
+    setNewProposal({
+      title: "",
+      description: "",
+      files: [],
+      status: "inbox",
+    });
+    handleCloseAddModal();
+  };
+
+  const handleStar = (id) => {
+    setProposals((prev) =>
+      prev.map((proposal) =>
+        proposal.id === id
+          ? { ...proposal, isNew: !proposal.isNew }
+          : proposal
+      )
+    );
+  };
+
+  const handleTrash = (id) => {
+    setProposals((prev) => prev.filter((proposal) => proposal.id !== id));
+  };
+
+  const handleProposalClick = (proposal) => {
+    setSelectedProposal(proposal); 
+  };
+
+  const filteredProposals = proposals.filter(
+    (proposal) => proposal.status === tabValue || tabValue === "inbox"
+  );
+
+  const renderFile = (file) => {
+    const isImage = file.type.startsWith("image/");
+    if (isImage) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const imageURL = reader.result;
+        return (
+          <div>
+            <img
+              src={imageURL}
+              alt="attachment-thumbnail"
+              style={{ width: "100px", height: "100px", objectFit: "cover" }}
+            />
+            <Typography variant="body2">{file.name}</Typography>
+          </div>
+        );
+      };
+      reader.readAsDataURL(file); 
+    } else {
+      return <Typography variant="body2">{file.name}</Typography>;
+    }
+  };
 
   return (
     <Container className="proposal-container">
@@ -187,7 +174,13 @@ function Proposal() {
         <Typography variant="h4" className="heading">
           Proposals
         </Typography>
-        <Fab color="primary" aria-label="add" size="medium" className="add-btn">
+        <Fab
+          color="primary"
+          aria-label="add"
+          size="medium"
+          className="add-btn"
+          onClick={handleOpenAddModal}
+        >
           <Add />
         </Fab>
       </div>
@@ -196,34 +189,67 @@ function Proposal() {
         <Tab label="Starred" value="starred" />
         <Tab label="Trash" value="trash" />
       </Tabs>
+
       <div className="proposal-list">
         {filteredProposals.map((proposal) => (
           <MessageCard
             key={proposal.id}
             message={proposal}
-            onClick={() => handleOpenProposal(proposal)} // Open modal
-            onStar={() => handleStar(proposal.id)} // Toggle star
-            onDelete={() => handleDelete(proposal.id)} // Handle delete (move to trash)
-            actionButton={
-              proposal.status === 'trash' ? (
-                <>
-                  <IconButton onClick={() => handleRestore(proposal.id)} aria-label="restore">
-                    <Restore />
-                  </IconButton>
-                  <IconButton onClick={() => handleDelete(proposal.id)} aria-label="delete forever">
-                    <DeleteForever />
-                  </IconButton>
-                </>
-              ) : (
-                <IconButton onClick={() => handleDelete(proposal.id)} aria-label="delete">
-                  <Star />
-                </IconButton>
-              )
-            }
+            onStar={() => handleStar(proposal.id)} 
+            onDelete={() => handleTrash(proposal.id)}
+            onClick={() => handleProposalClick(proposal)} 
           />
         ))}
       </div>
-      <ProposalModal message={selectedProposal} onClose={handleCloseModal} />
+
+      <Modal
+        open={openAddModal}
+        onClose={handleCloseAddModal}
+        aria-labelledby="add-proposal-modal"
+        aria-describedby="add-a-new-proposal"
+      >
+        <Box className="modal-box">
+          <Typography variant="h5">Create New Proposal</Typography>
+          <TextField
+            label="Title"
+            variant="outlined"
+            fullWidth
+            value={newProposal.title}
+            onChange={(e) =>
+              setNewProposal({ ...newProposal, title: e.target.value })
+            }
+            margin="normal"
+          />
+          <ReactQuill
+            value={newProposal.description}
+            onChange={(value) =>
+              setNewProposal({ ...newProposal, description: value })
+            }
+            placeholder="Write your proposal here..."
+            className="quill-editor"
+          />
+          <div {...getRootProps()} className="dropzone">
+            <input {...getInputProps()} />
+            <Typography variant="body2">
+              Drag & drop files here, or click to select files
+            </Typography>
+          </div>
+          <Box className="file-list">
+            {newProposal.files.map((file, index) => (
+              <div key={index}>{renderFile(file)}</div>
+            ))}
+          </Box>
+          <Button variant="contained" color="primary" onClick={handleSubmit}>
+            Submit Proposal
+          </Button>
+        </Box>
+      </Modal>
+
+      {/* Proposal Modal */}
+      <ProposalModal
+        message={selectedProposal} 
+        onClose={() => setSelectedProposal(null)} 
+      />
     </Container>
   );
 }
