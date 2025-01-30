@@ -23,31 +23,6 @@ import {
   FaCog,
   FaSignOutAlt,
 } from "react-icons/fa";
-import React, { useState, useEffect } from "react";
-import {
-  Box,
-  CssBaseline,
-  Drawer,
-  IconButton,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Switch,
-  Typography,
-  Tooltip,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
-import {
-  FaBars,
-  FaUser,
-  FaWallet,
-  FaFileAlt,
-  FaSchool,
-  FaCog,
-  FaSignOutAlt,
-} from "react-icons/fa";
 import logo from "../assets/HeaderResize1.png";
 import Proposals from "./Proposals";
 import SchoolTable from "./SchoolTable";
@@ -73,17 +48,10 @@ export const Dashboard = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [selectedSection, setSelectedSection] = useState("profile");
   const [isWideNavbar, setIsWideNavbar] = useState(true);
-  const [selectedSection, setSelectedSection] = useState("profile");
-  const [isWideNavbar, setIsWideNavbar] = useState(true);
 
   useEffect(() => {
     document.body.className = isDarkMode ? "dark-mode" : "light-mode";
-    document.body.className = isDarkMode ? "dark-mode" : "light-mode";
   }, [isDarkMode]);
-
-  const toggleNavbar = () => {
-    setIsWideNavbar((prev) => !prev);
-  };
 
   const toggleNavbar = () => {
     setIsWideNavbar((prev) => !prev);
@@ -108,14 +76,6 @@ export const Dashboard = () => {
     }
   };
 
-  const menuItems = [
-    { label: "Profile", icon: <FaUser />, section: "profile" },
-    { label: "Budget", icon: <FaWallet />, section: "budget" },
-    { label: "Proposal", icon: <FaFileAlt />, section: "proposal" },
-    { label: "Schools", icon: <FaSchool />, section: "schools" },
-    { label: "Settings", icon: <FaCog />, section: "settings" },
-    { label: "Logout", icon: <FaSignOutAlt />, section: "logout" },
-  ];
   const menuItems = [
     { label: "Profile", icon: <FaUser />, section: "profile" },
     { label: "Budget", icon: <FaWallet />, section: "budget" },
@@ -205,94 +165,11 @@ export const Dashboard = () => {
           />
         </Box>
       </Drawer>
-    <Box sx={{ display: "flex" }}>
-      <CssBaseline />
-      <Drawer
-        variant="permanent"
-        sx={{
-          width: isWideNavbar ? drawerWidth : drawerMinWidth,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
-            width: isWideNavbar ? drawerWidth : drawerMinWidth,
-            overflowX: "hidden",
-            boxSizing: "border-box",
-          },
-        }}
-      >
-        {/* Hamburger Icon Above the Logo */}
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: 1,
-          }}
-        >
-          <IconButton onClick={toggleNavbar}>
-            <FaBars />
-          </IconButton>
-        </Box>
-
-        {/* Logo */}
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: 2,
-          }}
-        >
-          <Box
-            component="img"
-            src={logo}
-            alt="Logo"
-            sx={{
-              width: isWideNavbar ? "100%" : "40px",
-              transition: "width 0.3s",
-            }}
-          />
-        </Box>
-
-        {/* Menu Items */}
-        <List>
-          {menuItems.map((item) => (
-            <Tooltip
-              title={isWideNavbar ? "" : item.label}
-              placement="right"
-              arrow
-              key={item.label}
-            >
-              <ListItem disablePadding>
-                <ListItemButton
-                  selected={selectedSection === item.section}
-                  onClick={() => setSelectedSection(item.section)}
-                >
-                  <ListItemIcon>{item.icon}</ListItemIcon>
-                  {isWideNavbar && <ListItemText primary={item.label} />}
-                </ListItemButton>
-              </ListItem>
-            </Tooltip>
-          ))}
-        </List>
-
-        {/* Dark Mode Toggle */}
-        <Box sx={{ p: 2, display: isWideNavbar ? "block" : "none" }}>
-          <Typography variant="body2">Dark Mode</Typography>
-          <Switch
-            checked={isDarkMode}
-            onChange={() => setIsDarkMode((prev) => !prev)}
-          />
-        </Box>
-      </Drawer>
 
       {/* Main Content */}
-      <Main open={isWideNavbar}>
-        {renderContent()}
-      </Main>
+      <Main open={isWideNavbar}>{renderContent()}</Main>
     </Box>
   );
 };
-
-export default Dashboard;
 
 export default Dashboard;
