@@ -25,8 +25,9 @@ import {
 } from "react-icons/fa";
 import logo from "../assets/HeaderResize1.png";
 import Proposals from "./Proposals";
-import SchoolTable from "./SchoolTable"; 
-import Budget from './Budget';
+import SchoolTable from "./SchoolTable";
+import Budget from "./Budget";
+import Profile from "./Profile";
 
 const drawerWidth = 240;
 const drawerMinWidth = 60;
@@ -59,7 +60,7 @@ export const Dashboard = () => {
   const renderContent = () => {
     switch (selectedSection) {
       case "profile":
-        return <div>Profile Content</div>;
+        return <Profile />;
       case "budget":
         return <Budget />;
       case "proposal":
@@ -166,9 +167,7 @@ export const Dashboard = () => {
       </Drawer>
 
       {/* Main Content */}
-      <Main open={isWideNavbar}>
-        {renderContent()}
-      </Main>
+      <Main open={isWideNavbar}>{renderContent()}</Main>
     </Box>
   );
 };
