@@ -17,7 +17,6 @@ const ProposalModal = ({ message, onClose }) => {
 
   const renderAttachment = (attachment) => {
     if (attachment && typeof attachment === 'string') {
-      // Check if the attachment is an image
       const isImage = attachment.match(/\.(jpeg|jpg|gif|png)$/i);
       if (isImage) {
         return (
@@ -33,7 +32,6 @@ const ProposalModal = ({ message, onClose }) => {
           </div>
         );
       } else {
-        // Non-image attachments
         return (
           <div className="attachment-item">
             <Chip

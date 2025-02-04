@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { useNavigate } from "react-router-dom";
-
-// Material UI Components
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   TextField,
   Button,
@@ -15,20 +14,25 @@ import {
   Stack,
   MenuItem,
   IconButton,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import PublishIcon from "@mui/icons-material/Publish";
+import CloseIcon from "@mui/icons-material/Close";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import SaveIcon from "@mui/icons-material/Save";
 
 const Budget = () => {
-  const [showForm, setShowForm] = useState(false); 
+  const [showForm, setShowForm] = useState(false);
+  const [editingDraftId, setEditingDraftId] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [files, setFiles] = useState([]);
   const [deadline, setDeadline] = useState("");
   const [status, setStatus] = useState("ongoing");
-  const [publishedNotices, setPublishedNotices] = useState([]);
-  const navigate = useNavigate();
+  const [drafts, setDrafts] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
+  const [tabIndex, setTabIndex] = useState(0);
 
   const handleFileChange = (e) => {
     const uploadedFiles = Array.from(e.target.files).map((file) => ({
@@ -38,202 +42,154 @@ const Budget = () => {
     setFiles(uploadedFiles);
   };
 
-  const handlePublish = () => {
-    if (title && description && deadline && status) {
-      const notice = {
-        title,
-        description,
-        files,
-        deadline,
-        status,
-      };
-      setPublishedNotices([...publishedNotices, notice]);
+  const handleSaveDraft = () => {
+    if (title || description || files.length > 0 || deadline) {
+      const draft = { id: editingDraftId || Date.now(), title, description, files, deadline, status };
+      
+      if (editingDraftId) {
+        setDrafts(drafts.map((d) => (d.id === editingDraftId ? draft : d)));
+        toast.info("Draft updated successfully!");
+      } else {
+        setDrafts([...drafts, draft]);
+        toast.info("Draft saved successfully!");
+      }
 
-      // Clear Fields
-      setTitle("");
-      setDescription("");
-      setFiles([]);
-      setDeadline("");
-      setStatus("ongoing");
-      setShowForm(false); 
+      resetForm();
     } else {
-      alert("Please fill in all fields before publishing.");
+      toast.warning("There's nothing to save as draft!");
     }
+  };
+
+  const handleEditDraft = (draft) => {
+    setTitle(draft.title);
+    setDescription(draft.description);
+    setFiles(draft.files);
+    setDeadline(draft.deadline);
+    setStatus(draft.status);
+    setEditingDraftId(draft.id);
+    setShowForm(true);
+  };
+
+  const handleSubmitAnnouncement = () => {
+    if (title && description) {
+      const announcement = { title, description, deadline };
+      setAnnouncements([...announcements, announcement]);
+      resetForm();
+      toast.success("Announcement submitted successfully!");
+    } else {
+      toast.error("Title and description are required!");
+    }
+  };
+
+  const resetForm = () => {
+    setTitle("");
+    setDescription("");
+    setFiles([]);
+    setDeadline("");
+    setStatus("ongoing");
+    setEditingDraftId(null);
+    setShowForm(false);
   };
 
   return (
     <Box sx={{ maxWidth: 800, margin: "2rem auto" }}>
-      {!showForm && (
-        <Stack direction="row" justifyContent="flex-end" sx={{ mb: 2 }}>
-          <IconButton
-            color="primary"
-            onClick={() => setShowForm(true)}
-            size="large"
-          >
-            <AddCircleOutlineIcon fontSize="large" />
-          </IconButton>
-        </Stack>
-      )}
+      <ToastContainer />
+      <Typography variant="h4" align="center" gutterBottom>
+        Budget Notices
+      </Typography>
+      
+      <Tabs value={tabIndex} onChange={(e, newValue) => setTabIndex(newValue)} centered>
+        <Tab label="Announcements" />
+        <Tab label="Drafts" />
+      </Tabs>
+
+      <Stack direction="row" justifyContent="flex-end" sx={{ mb: 2 }}>
+        <IconButton color="primary" onClick={() => setShowForm(!showForm)} size="large">
+          {showForm ? <CloseIcon fontSize="large" /> : <AddCircleOutlineIcon fontSize="large" />}
+        </IconButton>
+      </Stack>
 
       {showForm && (
         <Card variant="outlined" sx={{ padding: 2, boxShadow: 3 }}>
           <CardContent>
             <Typography variant="h5" gutterBottom>
-              Create a Notice
+              {editingDraftId ? "Edit Draft" : "Create a Notice"}
             </Typography>
-            {/* Title Field */}
-            <TextField
-              fullWidth
-              label="Title"
-              variant="outlined"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              margin="normal"
-            />
-
-            {/* Description Field */}
+            <TextField fullWidth label="Title" value={title} onChange={(e) => setTitle(e.target.value)} margin="normal" />
             <Typography variant="subtitle1" gutterBottom>
               Description
             </Typography>
-            <ReactQuill
-              theme="snow"
-              value={description}
-              onChange={setDescription}
-              placeholder="Write the notice description here..."
-            />
-
-            {/* File Upload */}
+            <ReactQuill theme="snow" value={description} onChange={setDescription} placeholder="Write the notice description here..." />
             <Box mt={2}>
-              <Button
-                variant="contained"
-                component="label"
-                startIcon={<CloudUploadIcon />}
-              >
+              <Button variant="contained" component="label" startIcon={<CloudUploadIcon />}>
                 Upload Files
-                <input
-                  type="file"
-                  multiple
-                  hidden
-                  accept="image/*,.pdf"
-                  onChange={handleFileChange}
-                />
+                <input type="file" multiple hidden accept="image/*,.pdf" onChange={handleFileChange} />
               </Button>
-              {files.length > 0 && (
-                <Box mt={2}>
-                  {files.map((item, index) => (
-                    <Typography key={index} variant="body2">
-                      {item.file.name}
-                    </Typography>
-                  ))}
-                </Box>
-              )}
             </Box>
-
-            {/* Deadline Picker */}
-            <TextField
-              fullWidth
-              label="Deadline"
-              type="date"
-              value={deadline}
-              onChange={(e) => setDeadline(e.target.value)}
-              margin="normal"
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-
-            {/* Status Dropdown */}
-            <TextField
-              fullWidth
-              select
-              label="Status"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              margin="normal"
-            >
+            <TextField fullWidth label="Deadline" type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} margin="normal" InputLabelProps={{ shrink: true }} />
+            <TextField fullWidth select label="Status" value={status} onChange={(e) => setStatus(e.target.value)} margin="normal">
               <MenuItem value="ongoing">Ongoing</MenuItem>
               <MenuItem value="closed">Closed</MenuItem>
             </TextField>
           </CardContent>
-
           <CardActions>
             <Stack direction="row" justifyContent="flex-end" spacing={2}>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<PublishIcon />}
-                onClick={handlePublish}
-              >
-                Publish Notice
+              <Button variant="contained" color="secondary" startIcon={<SaveIcon />} onClick={handleSaveDraft}>
+                Save as Draft
+              </Button>
+              <Button variant="contained" color="primary" onClick={handleSubmitAnnouncement}>
+                Submit Announcement
               </Button>
             </Stack>
           </CardActions>
         </Card>
       )}
 
-      {/* Published Notices */}
-      {publishedNotices.map((notice, index) => (
-        <Card
-          key={index}
-          variant="outlined"
-          sx={{ marginY: 2, padding: 2, boxShadow: 2 }}
-        >
-          <CardContent>
-            <Typography variant="h6">{notice.title}</Typography>
-            <Typography
-              variant="body2"
-              dangerouslySetInnerHTML={{ __html: notice.description }}
-            />
-            <Typography variant="body2" color="text.secondary">
-              Deadline: {notice.deadline}
+      {tabIndex === 0 && (
+        <Box>
+          <Typography variant="h5" gutterBottom>
+            Announcements
+          </Typography>
+          {announcements.length === 0 ? (
+            <Typography variant="h6" color="textSecondary" align="center">
+              No announcements yet!
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Status: {notice.status}
-            </Typography>
+          ) : (
+            announcements.map((announcement, index) => (
+              <Card key={index} variant="outlined" sx={{ marginY: 2, padding: 2, boxShadow: 2 }}>
+                <CardContent>
+                  <Typography variant="h6">{announcement.title}</Typography>
+                  <Typography variant="body2" dangerouslySetInnerHTML={{ __html: announcement.description }} />
+                  <Typography variant="body2" color="text.secondary">Deadline: {announcement.deadline || "Not set"}</Typography>
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </Box>
+      )}
 
-            {/* File Previews */}
-            <Box mt={2}>
-              {notice.files.map((item, i) => (
-                <Box key={i} mb={1}>
-                  {item.file.type.startsWith("image/") ? (
-                    <img
-                      src={item.preview}
-                      alt={item.file.name}
-                      style={{ maxWidth: "100%", height: "auto" }}
-                    />
-                  ) : item.file.type === "application/pdf" ? (
-                    <embed
-                      src={item.preview}
-                      type="application/pdf"
-                      width="100%"
-                      height="400px"
-                    />
-                  ) : null}
-                  <Typography variant="body2">
-                    <a
-                      href={item.preview}
-                      download={item.file.name}
-                      style={{ textDecoration: "none" }}
-                    >
-                      Download {item.file.name}
-                    </a>
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-          </CardContent>
-          <CardActions>
-            {/* Apply Button */}
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => navigate("/proposals")}
-            >
-              Apply
-            </Button>
-          </CardActions>
-        </Card>
-      ))}
+      {tabIndex === 1 && (
+        <Box>
+          <Typography variant="h5" gutterBottom>
+            Drafts
+          </Typography>
+          {drafts.length === 0 ? (
+            <Typography variant="h6" color="textSecondary" align="center">
+              No drafts here!
+            </Typography>
+          ) : (
+            drafts.map((draft) => (
+              <Card key={draft.id} variant="outlined" sx={{ marginY: 2, padding: 2, boxShadow: 2, cursor: "pointer" }} onClick={() => handleEditDraft(draft)}>
+                <CardContent>
+                  <Typography variant="h6">{draft.title || "Untitled Draft"}</Typography>
+                  <Typography variant="body2" dangerouslySetInnerHTML={{ __html: draft.description }} />
+                  <Typography variant="body2" color="text.secondary">Deadline: {draft.deadline || "Not set"}</Typography>
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </Box>
+      )}
     </Box>
   );
 };
