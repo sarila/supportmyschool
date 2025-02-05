@@ -44,8 +44,15 @@ const Budget = () => {
 
   const handleSaveDraft = () => {
     if (title || description || files.length > 0 || deadline) {
-      const draft = { id: editingDraftId || Date.now(), title, description, files, deadline, status };
-      
+      const draft = {
+        id: editingDraftId || Date.now(),
+        title,
+        description,
+        files,
+        deadline,
+        status,
+      };
+
       if (editingDraftId) {
         setDrafts(drafts.map((d) => (d.id === editingDraftId ? draft : d)));
         toast.info("Draft updated successfully!");
@@ -74,6 +81,11 @@ const Budget = () => {
     if (title && description) {
       const announcement = { title, description, deadline };
       setAnnouncements([...announcements, announcement]);
+
+      if (editingDraftId) {
+        setDrafts(drafts.filter((draft) => draft.id !== editingDraftId));
+      }
+
       resetForm();
       toast.success("Announcement submitted successfully!");
     } else {
@@ -97,15 +109,27 @@ const Budget = () => {
       <Typography variant="h4" align="center" gutterBottom>
         Budget Notices
       </Typography>
-      
-      <Tabs value={tabIndex} onChange={(e, newValue) => setTabIndex(newValue)} centered>
+
+      <Tabs
+        value={tabIndex}
+        onChange={(e, newValue) => setTabIndex(newValue)}
+        centered
+      >
         <Tab label="Announcements" />
         <Tab label="Drafts" />
       </Tabs>
 
       <Stack direction="row" justifyContent="flex-end" sx={{ mb: 2 }}>
-        <IconButton color="primary" onClick={() => setShowForm(!showForm)} size="large">
-          {showForm ? <CloseIcon fontSize="large" /> : <AddCircleOutlineIcon fontSize="large" />}
+        <IconButton
+          color="primary"
+          onClick={() => setShowForm(!showForm)}
+          size="large"
+        >
+          {showForm ? (
+            <CloseIcon fontSize="large" />
+          ) : (
+            <AddCircleOutlineIcon fontSize="large" />
+          )}
         </IconButton>
       </Stack>
 
@@ -115,29 +139,74 @@ const Budget = () => {
             <Typography variant="h5" gutterBottom>
               {editingDraftId ? "Edit Draft" : "Create a Notice"}
             </Typography>
-            <TextField fullWidth label="Title" value={title} onChange={(e) => setTitle(e.target.value)} margin="normal" />
+            <TextField
+              fullWidth
+              label="Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              margin="normal"
+            />
             <Typography variant="subtitle1" gutterBottom>
               Description
             </Typography>
-            <ReactQuill theme="snow" value={description} onChange={setDescription} placeholder="Write the notice description here..." />
+            <ReactQuill
+              theme="snow"
+              value={description}
+              onChange={setDescription}
+              placeholder="Write the notice description here..."
+            />
             <Box mt={2}>
-              <Button variant="contained" component="label" startIcon={<CloudUploadIcon />}>
+              <Button
+                variant="contained"
+                component="label"
+                startIcon={<CloudUploadIcon />}
+              >
                 Upload Files
-                <input type="file" multiple hidden accept="image/*,.pdf" onChange={handleFileChange} />
+                <input
+                  type="file"
+                  multiple
+                  hidden
+                  accept="image/*,.pdf"
+                  onChange={handleFileChange}
+                />
               </Button>
             </Box>
-            <TextField fullWidth label="Deadline" type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} margin="normal" InputLabelProps={{ shrink: true }} />
-            <TextField fullWidth select label="Status" value={status} onChange={(e) => setStatus(e.target.value)} margin="normal">
+            <TextField
+              fullWidth
+              label="Deadline"
+              type="date"
+              value={deadline}
+              onChange={(e) => setDeadline(e.target.value)}
+              margin="normal"
+              InputLabelProps={{ shrink: true }}
+            />
+            <TextField
+              fullWidth
+              select
+              label="Status"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              margin="normal"
+            >
               <MenuItem value="ongoing">Ongoing</MenuItem>
               <MenuItem value="closed">Closed</MenuItem>
             </TextField>
           </CardContent>
           <CardActions>
             <Stack direction="row" justifyContent="flex-end" spacing={2}>
-              <Button variant="contained" color="secondary" startIcon={<SaveIcon />} onClick={handleSaveDraft}>
+              <Button
+                variant="contained"
+                color="secondary"
+                startIcon={<SaveIcon />}
+                onClick={handleSaveDraft}
+              >
                 Save as Draft
               </Button>
-              <Button variant="contained" color="primary" onClick={handleSubmitAnnouncement}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSubmitAnnouncement}
+              >
                 Submit Announcement
               </Button>
             </Stack>
@@ -156,11 +225,22 @@ const Budget = () => {
             </Typography>
           ) : (
             announcements.map((announcement, index) => (
-              <Card key={index} variant="outlined" sx={{ marginY: 2, padding: 2, boxShadow: 2 }}>
+              <Card
+                key={index}
+                variant="outlined"
+                sx={{ marginY: 2, padding: 2, boxShadow: 2 }}
+              >
                 <CardContent>
                   <Typography variant="h6">{announcement.title}</Typography>
-                  <Typography variant="body2" dangerouslySetInnerHTML={{ __html: announcement.description }} />
-                  <Typography variant="body2" color="text.secondary">Deadline: {announcement.deadline || "Not set"}</Typography>
+                  <Typography
+                    variant="body2"
+                    dangerouslySetInnerHTML={{
+                      __html: announcement.description,
+                    }}
+                  />
+                  <Typography variant="body2" color="text.secondary">
+                    Deadline: {announcement.deadline || "Not set"}
+                  </Typography>
                 </CardContent>
               </Card>
             ))
@@ -179,11 +259,23 @@ const Budget = () => {
             </Typography>
           ) : (
             drafts.map((draft) => (
-              <Card key={draft.id} variant="outlined" sx={{ marginY: 2, padding: 2, boxShadow: 2, cursor: "pointer" }} onClick={() => handleEditDraft(draft)}>
+              <Card
+                key={draft.id}
+                variant="outlined"
+                sx={{ marginY: 2, padding: 2, boxShadow: 2, cursor: "pointer" }}
+                onClick={() => handleEditDraft(draft)}
+              >
                 <CardContent>
-                  <Typography variant="h6">{draft.title || "Untitled Draft"}</Typography>
-                  <Typography variant="body2" dangerouslySetInnerHTML={{ __html: draft.description }} />
-                  <Typography variant="body2" color="text.secondary">Deadline: {draft.deadline || "Not set"}</Typography>
+                  <Typography variant="h6">
+                    {draft.title || "Untitled Draft"}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    dangerouslySetInnerHTML={{ __html: draft.description }}
+                  />
+                  <Typography variant="body2" color="text.secondary">
+                    Deadline: {draft.deadline || "Not set"}
+                  </Typography>
                 </CardContent>
               </Card>
             ))
