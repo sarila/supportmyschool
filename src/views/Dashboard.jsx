@@ -28,6 +28,7 @@ import Proposals from "./Proposals";
 import SchoolTable from "./SchoolTable";
 import Budget from "./Budget";
 import Profile from "./Profile";
+import ViewDashboard from "./ViewDashboard";
 
 const drawerWidth = 240;
 const drawerMinWidth = 60;
@@ -59,6 +60,8 @@ export const Dashboard = () => {
 
   const renderContent = () => {
     switch (selectedSection) {
+      case "view-dashboard":
+        return <ViewDashboard/>;
       case "profile":
         return <Profile />;
       case "budget":
@@ -77,6 +80,7 @@ export const Dashboard = () => {
   };
 
   const menuItems = [
+    { label: "Dashboard", icon: <FaUser />, section: "view-dashboard" },
     { label: "Profile", icon: <FaUser />, section: "profile" },
     { label: "Budget", icon: <FaWallet />, section: "budget" },
     { label: "Proposal", icon: <FaFileAlt />, section: "proposal" },

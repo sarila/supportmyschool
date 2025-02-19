@@ -1,96 +1,58 @@
-import React, { useState } from 'react';
-import {
-  Card,
-  Avatar,
-  Typography,
-  Chip,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-} from '@mui/material';
-import { Star, Delete, AttachFile, AccessTime } from '@mui/icons-material';
+import React from 'react';
+import { Card, CardContent, Typography, IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
 
-function ProposalCard({ message, onClick, onStar, onDelete }) {
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
-  const handleDeleteClick = (e) => {
+const ProposalCard = ({ message, onDelete, onStar, isStarred }) => {
+  const handleDelete = (e) => {
     e.stopPropagation();
-    setShowDeleteConfirm(true);
+    if (typeof onDelete === 'function') {
+      onDelete();
+    } else {
+      console.error("onDelete is not a function");
+    }
   };
 
-  const handleConfirmDelete = () => {
-    onDelete();
-    setShowDeleteConfirm(false);
-  };
-
-  const handleCancelDelete = () => {
-    setShowDeleteConfirm(false);
+  const handleStar = (e) => {
+    e.stopPropagation();
+    if (typeof onStar === 'function') {
+      onStar();
+    } else {
+      console.error("onStar is not a function");
+    }
   };
 
   return (
-    <>
-      <Card onClick={onClick} className={`proposal-card ${message.isNew ? 'new' : ''}`}>
-        <div className="card-left">
-          <Avatar className="avatar">{message.sender[0]}</Avatar>
-          <div className="card-info">
-            <Typography variant="subtitle1" className="card-sender">
-              {message.sender}
-            </Typography>
-            <Typography variant="body2" className="card-subject">
+    <Card className="mb-4 hover:shadow-lg transition-shadow duration-300">
+      <CardContent>
+        <div className="flex justify-between items-start">
+          <div>
+            <Typography variant="h6" component="div">
               {message.subject}
             </Typography>
+            <Typography variant="body2" color="text.secondary">
+              From: {message.sender}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Date: {message.date}
+            </Typography>
+          </div>
+          <div>
+            <IconButton onClick={handleStar} color={isStarred ? "primary" : "default"}>
+              {isStarred ? <StarIcon /> : <StarBorderIcon />}
+            </IconButton>
+            <IconButton onClick={handleDelete} color="error">
+              <DeleteIcon />
+            </IconButton>
           </div>
         </div>
-        <div className="card-right">
-          {message.attachments.length > 0 && (
-            <Chip
-              icon={<AttachFile />}
-              label="Attachments"
-              variant="outlined"
-              size="small"
-              className="attachment-chip"
-            />
-          )}
-          <Typography variant="body2" className="card-date">
-            <AccessTime fontSize="small" /> {message.date}
-          </Typography>
-          <IconButton
-            onClick={(e) => {
-              e.stopPropagation();
-              onStar();
-            }}
-            aria-label="star"
-          >
-            <Star color={message.status === 'starred' ? 'primary' : 'disabled'} />
-          </IconButton>
-          <IconButton onClick={handleDeleteClick} aria-label="delete">
-            <Delete color="error" />
-          </IconButton>
-        </div>
-      </Card>
-
-      {/* Delete Confirmation Dialog */}
-      {showDeleteConfirm && (
-        <Dialog open={showDeleteConfirm} onClose={handleCancelDelete}>
-          <DialogTitle>Confirm Deletion</DialogTitle>
-          <DialogContent>
-            <Typography>Do you want to permanently delete this proposal?</Typography>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCancelDelete} color="primary">
-              No
-            </Button>
-            <Button onClick={handleConfirmDelete} color="error">
-              Yes
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )}
-    </>
+        <Typography variant="body1" className="mt-2">
+          {message.summary}
+        </Typography>
+      </CardContent>
+    </Card>
   );
-}
+};
 
 export default ProposalCard;
