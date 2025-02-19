@@ -1,15 +1,7 @@
 import React from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  Typography,
-  Divider,
-  Button,
-  DialogActions,
-  Chip,
-} from "@mui/material";
-import { AttachFile } from "@mui/icons-material";
+import { Modal, Button } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFile, faImage } from "@fortawesome/free-solid-svg-icons";
 import "../styles/proposal.css";
 
 const ProposalModal = ({ message, onClose }) => {
@@ -24,22 +16,18 @@ const ProposalModal = ({ message, onClose }) => {
             <img 
               src={attachment} 
               alt="attachment-thumbnail" 
-              className="attachment-thumbnail" 
+              className="img-thumbnail attachment-thumbnail" 
             />
-            <Typography variant="body2" className="attachment-name">
-              {attachment}
-            </Typography>
+            <p className="attachment-name">{attachment}</p>
           </div>
         );
       } else {
         return (
           <div className="attachment-item">
-            <Chip
-              icon={<AttachFile />}
-              label={<a href={attachment} target="_blank" rel="noopener noreferrer">{attachment}</a>}
-              clickable
-              variant="outlined"
-            />
+            <FontAwesomeIcon icon={faFile} className="file-icon" />
+            <a href={attachment} target="_blank" rel="noopener noreferrer" className="attachment-link">
+              {attachment}
+            </a>
           </div>
         );
       }
@@ -48,50 +36,40 @@ const ProposalModal = ({ message, onClose }) => {
   };
 
   return (
-    <Dialog
-      open={!!message}
-      onClose={onClose}
-      fullWidth
-      maxWidth="lg"
-      className="proposal-modal"
-    >
-      <DialogTitle className="modal-header">
-        <Typography variant="h5" className="modal-title">
-          {message.subject}
-        </Typography>
-      </DialogTitle>
-      <DialogContent className="modal-content-wrapper">
+    <Modal show={!!message} onHide={onClose} size="lg" className="proposal-modal">
+      <Modal.Header closeButton>
+        <Modal.Title>{message.subject}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
         <div className="modal-info">
-          <Typography variant="subtitle1" className="modal-sender">
+          <p className="modal-sender">
             <strong>From:</strong> {message.sender}
-          </Typography>
-          <Typography variant="subtitle2" className="modal-date">
+          </p>
+          <p className="modal-date">
             <strong>Date:</strong> {message.date}
-          </Typography>
+          </p>
         </div>
-        <Divider className="modal-divider" />
-        <Typography
-          variant="body1"
-          className="modal-body-content"
-          dangerouslySetInnerHTML={{ __html: message.content }}
-        />
+        <hr />
+        <div className="modal-body-content" dangerouslySetInnerHTML={{ __html: message.content }} />
         {message.attachments.length > 0 && (
           <div className="modal-attachments">
-            <Typography variant="h6">Attachments:</Typography>
-            {message.attachments.map((attachment, index) => (
-              <div key={index} className="modal-attachment-item">
-                {renderAttachment(attachment)}
-              </div>
-            ))}
+            <h6>Attachments:</h6>
+            <div className="attachment-list">
+              {message.attachments.map((attachment, index) => (
+                <div key={index} className="modal-attachment-item">
+                  {renderAttachment(attachment)}
+                </div>
+              ))}
+            </div>
           </div>
         )}
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} variant="contained" className="close-btn">
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={onClose}>
           Close
         </Button>
-      </DialogActions>
-    </Dialog>
+      </Modal.Footer>
+    </Modal>
   );
 };
 
