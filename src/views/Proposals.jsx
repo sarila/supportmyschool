@@ -1,256 +1,396 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   Container,
-  Box,
-  Typography,
-  Fab,
+  Row,
+  Col,
+  Button,
   Tabs,
   Tab,
-  TextField,
-  Button,
   Modal,
-} from "@mui/material";
+  Form,
+} from "react-bootstrap";
+import { Card } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faPlus,
+  faStar,
+  faTrash,
+  faFile,
+} from "@fortawesome/free-solid-svg-icons";
 import ReactQuill from "react-quill";
-import { Add } from "@mui/icons-material";
 import { useDropzone } from "react-dropzone";
+import { ToastContainer, toast } from "react-toastify";
 import "react-quill/dist/quill.snow.css";
+import "react-toastify/dist/ReactToastify.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/proposal.css";
-import MessageCard from "../components/ProposalCard";
-import ProposalModal from "../components/ProposalModal";
-
-const initialProposals = [
-  {
-    id: 1,
-    sender: "Kanya School",
-    subject: "Infrastructure Budget Allocation",
-    summary: "Request for additional funding for infrastructure.",
-    date: "Today",
-    content: "Detailed proposal for infrastructure budget allocation.",
-    isNew: true,
-    attachments: [],
-  },
-  {
-    id: 2,
-    sender: "Shree Laxmi Secondary School",
-    subject: "Projector Budget",
-    summary: "Proposal for purchasing new projectors.",
-    date: "Yesterday",
-    content: "Proposal for acquiring modern projectors for classrooms.",
-    isNew: false,
-    attachments: ["AppScreenshots.pdf"],
-  },
-  {
-    id: 3,
-    sender: "Green Valley School",
-    subject: "Library Renovation Request",
-    summary: "Proposal to renovate and expand the school library.",
-    date: "2 days ago",
-    content:
-      "Detailed breakdown of the renovation plans and costs for the library.",
-    isNew: true,
-    attachments: [],
-  },
-  {
-    id: 4,
-    sender: "Sunrise Academy",
-    subject: "Science Lab Equipment",
-    summary: "Request for funding to upgrade science lab equipment.",
-    date: "3 days ago",
-    content: "Proposal for purchasing modern lab equipment for experiments.",
-    isNew: true,
-    attachments: ["LabEquipmentList.pdf"],
-  },
-  {
-    id: 5,
-    sender: "Everest High School",
-    subject: "Sports Ground Maintenance",
-    summary: "Proposal for repairing and maintaining the sports ground.",
-    date: "Last week",
-    content: "Details about the maintenance plans for the sports ground.",
-    isNew: false,
-    attachments: [],
-  },
-];
 
 function Proposal() {
+  const [proposals, setProposals] = useState([]);
   const [selectedProposal, setSelectedProposal] = useState(null);
-  const [proposals, setProposals] = useState(initialProposals);
   const [tabValue, setTabValue] = useState("inbox");
   const [openAddModal, setOpenAddModal] = useState(false);
   const [newProposal, setNewProposal] = useState({
+    id: null,
     title: "",
     description: "",
     files: [],
     status: "inbox",
   });
 
-  const handleOpenAddModal = () => setOpenAddModal(true);
+  const handleOpenAddModal = () => {
+    setNewProposal({
+      id: null,
+      title: "",
+      description: "",
+      files: [],
+      status: "inbox",
+    });
+    setOpenAddModal(true);
+  };
+
   const handleCloseAddModal = () => setOpenAddModal(false);
 
-  const handleTabChange = (event, newTabValue) => {
+  const handleTabChange = (newTabValue) => {
     setTabValue(newTabValue);
   };
 
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop: (acceptedFiles) => {
-      setNewProposal((prev) => ({
-        ...prev,
-        files: [...prev.files, ...acceptedFiles],
-      }));
-    },
-    multiple: true,
-  });
+  const onDrop = useCallback((acceptedFiles) => {
+    setNewProposal((prev) => ({
+      ...prev,
+      files: [...prev.files, ...acceptedFiles],
+    }));
+  }, []);
 
-  const handleSubmit = () => {
+  const { getRootProps, getInputProps } = useDropzone({ onDrop });
+
+  const handleSubmit = (isDraft = false) => {
+    if (!newProposal.title.trim() || !newProposal.description.trim()) {
+      toast.error("Title and description are required!");
+      return;
+    }
+
     const updatedProposal = {
-      id: proposals.length + 1,
-      sender: "New Sender",
+      id: newProposal.id || Date.now(),
+      sender: "Current User",
       subject: newProposal.title,
-      summary: newProposal.description,
-      date: "Just Now",
+      summary:
+        newProposal.description.replace(/<[^>]*>/g, "").substring(0, 100) +
+        "...",
+      date: new Date().toLocaleDateString(),
       content: newProposal.description,
-      isNew: true,
-      attachments: newProposal.files.map((file) => file.name),
-      status: newProposal.status,
+      isStarred: false,
+      attachments: newProposal.files.map((file) => ({
+        name: file.name,
+        type: file.type,
+        url: URL.createObjectURL(file)
+      })),
+      status: isDraft ? "draft" : "inbox",
     };
-    setProposals([...proposals, updatedProposal]);
+
+    setProposals((prevProposals) => {
+      const index = prevProposals.findIndex((p) => p.id === updatedProposal.id);
+      if (index !== -1) {
+        const newProposals = [...prevProposals];
+        newProposals[index] = updatedProposal;
+        return newProposals;
+      }
+      return [...prevProposals, updatedProposal];
+    });
+
     setNewProposal({
+      id: null,
       title: "",
       description: "",
       files: [],
       status: "inbox",
     });
     handleCloseAddModal();
+    toast.success(
+      isDraft ? "Draft saved successfully!" : "Proposal submitted successfully!"
+    );
   };
 
   const handleStar = (id) => {
-    setProposals((prev) =>
-      prev.map((proposal) =>
-        proposal.id === id
-          ? { ...proposal, isNew: !proposal.isNew }
-          : proposal
-      )
+    const updatedProposals = proposals.map((proposal) =>
+      proposal.id === id
+        ? { ...proposal, isStarred: !proposal.isStarred }
+        : proposal
+    );
+    setProposals(updatedProposals);
+    toast.info(
+      updatedProposals.find((p) => p.id === id).isStarred
+        ? "Proposal starred!"
+        : "Proposal unstarred!"
     );
   };
 
   const handleTrash = (id) => {
-    setProposals((prev) => prev.filter((proposal) => proposal.id !== id));
+    const updatedProposals = proposals.map((proposal) =>
+      proposal.id === id ? { ...proposal, status: "trash" } : proposal
+    );
+    setProposals(updatedProposals);
+    toast.warn("Proposal moved to trash!");
   };
 
   const handleProposalClick = (proposal) => {
-    setSelectedProposal(proposal); 
-  };
-
-  const filteredProposals = proposals.filter(
-    (proposal) => proposal.status === tabValue || tabValue === "inbox"
-  );
-
-  const renderFile = (file) => {
-    const isImage = file.type.startsWith("image/");
-    if (isImage) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const imageURL = reader.result;
-        return (
-          <div>
-            <img
-              src={imageURL}
-              alt="attachment-thumbnail"
-              style={{ width: "100px", height: "100px", objectFit: "cover" }}
-            />
-            <Typography variant="body2">{file.name}</Typography>
-          </div>
-        );
-      };
-      reader.readAsDataURL(file); 
+    if (proposal.status === "draft") {
+      setNewProposal({
+        id: proposal.id,
+        title: proposal.subject,
+        description: proposal.content,
+        files: proposal.attachments.map((attachment) => {
+          const fileName = attachment.name;
+          return new File([attachment.url], fileName, {
+            type: attachment.type,
+          });
+        }),
+        status: "draft",
+      });
+      setOpenAddModal(true);
     } else {
-      return <Typography variant="body2">{file.name}</Typography>;
+      setSelectedProposal(proposal);
     }
   };
 
+  const filteredProposals = proposals.filter((proposal) => {
+    if (tabValue === "inbox") return proposal.status === "inbox";
+    if (tabValue === "starred") return proposal.isStarred;
+    if (tabValue === "drafts") return proposal.status === "draft";
+    if (tabValue === "trash") return proposal.status === "trash";
+    return true;
+  });
+
   return (
     <Container className="proposal-container">
-      <div className="header">
-        <Typography variant="h4" className="heading">
-          Proposals
-        </Typography>
-        <Fab
-          color="primary"
-          aria-label="add"
-          size="medium"
-          className="add-btn"
-          onClick={handleOpenAddModal}
-        >
-          <Add />
-        </Fab>
-      </div>
-      <Tabs value={tabValue} onChange={handleTabChange} aria-label="email categories">
-        <Tab label="Inbox" value="inbox" />
-        <Tab label="Starred" value="starred" />
-        <Tab label="Trash" value="trash" />
+      <ToastContainer />
+      <Row className="header">
+        <Col>
+          <h4 className="heading">Proposals</h4>
+        </Col>
+        <Col xs="auto">
+          <Button
+            variant="primary"
+            className="add-btn"
+            onClick={handleOpenAddModal}
+          >
+            <FontAwesomeIcon icon={faPlus} />
+          </Button>
+        </Col>
+      </Row>
+
+      <Tabs activeKey={tabValue} onSelect={handleTabChange} className="mb-4">
+        <Tab eventKey="inbox" title="Inbox" />
+        <Tab eventKey="starred" title="Starred" />
+        <Tab eventKey="drafts" title="Drafts" />
+        <Tab eventKey="trash" title="Trash" />
       </Tabs>
 
-      <div className="proposal-list">
-        {filteredProposals.map((proposal) => (
-          <MessageCard
-            key={proposal.id}
-            message={proposal}
-            onStar={() => handleStar(proposal.id)} 
-            onDelete={() => handleTrash(proposal.id)}
-            onClick={() => handleProposalClick(proposal)} 
-          />
-        ))}
-      </div>
+      <Row className="proposal-list">
+        {filteredProposals.length > 0 ? (
+          filteredProposals.map((proposal) => (
+            <Col xs={12} key={proposal.id}>
+              <ProposalCard
+                proposal={proposal}
+                onStar={() => handleStar(proposal.id)}
+                onDelete={() => handleTrash(proposal.id)}
+                onClick={() => handleProposalClick(proposal)}
+              />
+            </Col>
+          ))
+        ) : (
+          <Col xs={12}>
+            <p className="text-center">No Proposals here</p>
+          </Col>
+        )}
+      </Row>
 
-      <Modal
-        open={openAddModal}
-        onClose={handleCloseAddModal}
-        aria-labelledby="add-proposal-modal"
-        aria-describedby="add-a-new-proposal"
-      >
-        <Box className="modal-box">
-          <Typography variant="h5">Create New Proposal</Typography>
-          <TextField
-            label="Title"
-            variant="outlined"
-            fullWidth
-            value={newProposal.title}
-            onChange={(e) =>
-              setNewProposal({ ...newProposal, title: e.target.value })
-            }
-            margin="normal"
-          />
-          <ReactQuill
-            value={newProposal.description}
-            onChange={(value) =>
-              setNewProposal({ ...newProposal, description: value })
-            }
-            placeholder="Write your proposal here..."
-            className="quill-editor"
-          />
-          <div {...getRootProps()} className="dropzone">
-            <input {...getInputProps()} />
-            <Typography variant="body2">
-              Drag & drop files here, or click to select files
-            </Typography>
-          </div>
-          <Box className="file-list">
-            {newProposal.files.map((file, index) => (
-              <div key={index}>{renderFile(file)}</div>
-            ))}
-          </Box>
-          <Button variant="contained" color="primary" onClick={handleSubmit}>
+      <Modal show={openAddModal} onHide={handleCloseAddModal} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>
+            {newProposal.id ? "Edit Draft" : "Create New Proposal"}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Title</Form.Label>
+              <Form.Control
+                type="text"
+                value={newProposal.title}
+                onChange={(e) =>
+                  setNewProposal({ ...newProposal, title: e.target.value })
+                }
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Description</Form.Label>
+              <ReactQuill
+                value={newProposal.description}
+                onChange={(value) =>
+                  setNewProposal({ ...newProposal, description: value })
+                }
+                placeholder="Write your proposal here..."
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <div {...getRootProps()} className="dropzone">
+                <input {...getInputProps()} />
+                <p>Drag & drop files here, or click to select files</p>
+              </div>
+            </Form.Group>
+            {newProposal.files.length > 0 && (
+              <Form.Group className="mb-3">
+                <Form.Label>Attached Files:</Form.Label>
+                <ul className="list-group">
+                  {newProposal.files.map((file, index) => (
+                    <li key={index} className="list-group-item">
+                      {file.name}
+                    </li>
+                  ))}
+                </ul>
+              </Form.Group>
+            )}
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseAddModal}>
+            Close
+          </Button>
+          <Button variant="info" onClick={() => handleSubmit(true)}>
+            Save as Draft
+          </Button>
+          <Button variant="primary" onClick={() => handleSubmit(false)}>
             Submit Proposal
           </Button>
-        </Box>
+        </Modal.Footer>
       </Modal>
 
-      {/* Proposal Modal */}
       <ProposalModal
-        message={selectedProposal} 
-        onClose={() => setSelectedProposal(null)} 
+        proposal={selectedProposal}
+        onClose={() => setSelectedProposal(null)}
       />
     </Container>
+  );
+}
+
+function ProposalCard({ proposal, onStar, onDelete, onClick }) {
+  if (!proposal) {
+    return null;
+  }
+  return (
+    <Card className="mb-3" onClick={() => onClick(proposal)}>
+      <Card.Body>
+        <Card.Title>{proposal.subject}</Card.Title>
+        <Card.Text>{proposal.summary}</Card.Text>
+        <div className="d-flex justify-content-between align-items-center">
+          <small className="text-muted">{proposal.date}</small>
+          <div>
+            <Button
+              variant="link"
+              onClick={(e) => {
+                e.stopPropagation();
+                onStar(proposal.id);
+              }}
+            >
+              <FontAwesomeIcon
+                icon={faStar}
+                color={proposal.isStarred ? "gold" : "gray"}
+              />
+            </Button>
+            <Button
+              variant="link"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(proposal.id);
+              }}
+            >
+              <FontAwesomeIcon icon={faTrash} color="red" />
+            </Button>
+          </div>
+        </div>
+      </Card.Body>
+    </Card>
+  );
+}
+
+function ProposalModal({ proposal, onClose }) {
+  if (!proposal) return null;
+
+  const renderAttachment = (attachment) => {
+    if (attachment.type.startsWith('image/')) {
+      return (
+        <div className="attachment-item">
+          <a href={attachment.url} target="_blank" rel="noopener noreferrer">
+            <img
+              src={attachment.url}
+              alt="attachment-thumbnail"
+              className="img-thumbnail attachment-thumbnail"
+            />
+          </a>
+          <p className="attachment-name">{attachment.name}</p>
+        </div>
+      );
+    } else {
+      return (
+        <div className="attachment-item">
+          <FontAwesomeIcon icon={faFile} className="file-icon" />
+          <a
+            href={attachment.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="attachment-link"
+          >
+            {attachment.name}
+          </a>
+        </div>
+      );
+    }
+  };  
+
+  return (
+    <Modal
+      show={!!proposal}
+      onHide={onClose}
+      size="lg"
+      className="proposal-modal"
+    >
+      <Modal.Header closeButton>
+        <Modal.Title>{proposal.subject}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <div className="modal-info">
+          <p className="modal-sender">
+            <strong>From:</strong> {proposal.sender}
+          </p>
+          <p className="modal-date">
+            <strong>Date:</strong> {proposal.date}
+          </p>
+        </div>
+        <hr />
+        <div
+          className="modal-body-content"
+          dangerouslySetInnerHTML={{ __html: proposal.content }}
+        />
+        {proposal.attachments && proposal.attachments.length > 0 && (
+          <div className="modal-attachments">
+            <h6>Attachments:</h6>
+            <div className="attachment-list">
+              {proposal.attachments.map((attachment, index) => (
+                <div key={index} className="modal-attachment-item">
+                  {renderAttachment(attachment)}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={onClose}>
+          Close
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 }
 
