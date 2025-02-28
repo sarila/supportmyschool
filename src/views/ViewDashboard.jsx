@@ -1,18 +1,29 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import { Typography, Button } from "@mui/material";
+import { Typography, Button, Box, Grid, Paper, CircularProgress, useTheme } from "@mui/material";
+import { styled } from '@mui/material/styles';
 import MessageCard from "../components/ProposalCard";
 import useProposalData from "../hooks/useProposalData";
 
-const Dashboard = () => {
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3),
+  borderRadius: theme.shape.borderRadius * 2,
+  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+  '&:hover': {
+    transform: 'translateY(-5px)',
+    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+  },
+}));
+
+const ViewDashboard = () => {
   const navigate = useNavigate();
   const { proposals, loading } = useProposalData();
   const [starredProposals, setStarredProposals] = useState({});
+  const theme = useTheme();
 
   const handleDelete = (id) => {
-    // Logic to delete a proposal
     console.log(`Deleting proposal with id: ${id}`);
-    // You would typically update your state or make an API call here
   };
 
   const handleStar = (id) => {
@@ -25,49 +36,74 @@ const Dashboard = () => {
   const latestProposals = proposals.slice(0, 5);
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <div className="bg-white shadow-lg rounded-xl p-4 mb-6">
-        <h2 className="text-lg font-semibold text-[#1976d2] mb-4">Budget Distribution</h2>
-        <iframe
-          src="https://via.placeholder.com/400"
-          className="w-full h-64 rounded-lg border border-gray-300"
-          title="Pie Chart"
-        ></iframe>
-      </div>
-      
-      {/* Proposal List */}
-      <div className="bg-white shadow-lg rounded-xl p-4">
-        <h2 className="text-lg font-semibold text-[#1976d2] mb-4">Proposals & Budgets</h2>
-        {loading ? (
-          <Typography variant="body1" className="text-gray-600">
-            Loading proposals...
-          </Typography>
-        ) : latestProposals.length > 0 ? (
-          latestProposals.map((proposal) => (
-            <MessageCard 
-              key={proposal.id} 
-              message={proposal} 
-              onDelete={() => handleDelete(proposal.id)}
-              onStar={() => handleStar(proposal.id)}
-              isStarred={starredProposals[proposal.id]}
-            />
-          ))
-        ) : (
-          <Typography variant="body1" className="text-gray-600">
-            No proposals available
-          </Typography>
-        )}
-        <Button
-          variant="contained"
-          color="primary"
-          className="mt-4"
-          onClick={() => navigate("/proposals")}
-        >
-          View More
-        </Button>
-      </div>
-    </div>
+    <Box sx={{ p: 4, bgcolor: theme.palette.background.default, minHeight: '100vh' }}>
+      <Typography variant="h4" fontWeight="bold" color="primary" gutterBottom sx={{ mb: 4 }}>
+        Dashboard Overview
+      </Typography>
+      <Grid container spacing={4}>
+        <Grid item xs={12} md={6}>
+          <StyledPaper>
+            <Typography variant="h5" fontWeight="bold" color="primary" gutterBottom>
+              Budget Distribution
+            </Typography>
+            <Box sx={{ height: 300, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <iframe
+                src="https://lookerstudio.google.com/u/0/reporting/667d6459-3865-4de6-8280-5e3bfd56e89e/page/ETAmD"
+                width="100%"
+                height="300"
+                frameBorder="0"
+                style={{ border: 0 }}
+                allowFullScreen
+              ></iframe>
+            </Box>
+          </StyledPaper>
+        </Grid>
+        
+        <Grid item xs={12} md={6}>
+          <StyledPaper>
+            <Typography variant="h5" fontWeight="bold" color="primary" gutterBottom>
+              Recent Proposals
+            </Typography>
+            {loading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+                <CircularProgress />
+              </Box>
+            ) : latestProposals.length > 0 ? (
+              latestProposals.map((proposal) => (
+                <MessageCard 
+                  key={proposal.id} 
+                  message={proposal} 
+                  onDelete={() => handleDelete(proposal.id)}
+                  onStar={() => handleStar(proposal.id)}
+                  isStarred={starredProposals[proposal.id]}
+                />
+              ))
+            ) : (
+              <Typography variant="body1" color="text.secondary">
+                No proposals available
+              </Typography>
+            )}
+            <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => navigate("/proposals")}
+                sx={{ 
+                  borderRadius: '20px',
+                  textTransform: 'none',
+                  px: 3,
+                  py: 1,
+                  fontWeight: 'bold',
+                }}
+              >
+                View All Proposals
+              </Button>
+            </Box>
+          </StyledPaper>
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 
-export default Dashboard;
+export default ViewDashboard;
